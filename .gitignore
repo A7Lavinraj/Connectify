@@ -1,0 +1,12 @@
+#Node modules
+node_modules/
+
+# Production code
+dist/
+public/static/
+
+# Environment files
+*.env
+
+# Log files
+*.log
