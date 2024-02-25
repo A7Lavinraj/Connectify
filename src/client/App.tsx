@@ -18,7 +18,7 @@ export default function App() {
         <p className="text-custom300 text-center text-lg mt-5">
           A real time chat application in Mern stack
         </p>
-        <SearchModel status={searchModel.status} />
+        <SearchModel isOpen={searchModel.status} />
       </main>
       <Bottombar />
     </div>

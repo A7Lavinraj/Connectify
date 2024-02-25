@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-interface SearchModelStore {
+export interface SearchModelStore {
   status: boolean;
   open: () => void;
   close: () => void;
