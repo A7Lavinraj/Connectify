@@ -2,6 +2,9 @@ import React from "react";
 import { useLocation } from "react-router-dom";
 import { Outlet, Navigate } from "react-router-dom";
 
+const BASE_API_URL =
+  process.env.NODE_ENV === "development" ? "http://localhost:3000" : "";
+
 export default function ProtectedRoutes() {
   const location = useLocation();
   const [validation, setValidation] = React.useState<boolean>(false);
@@ -10,7 +13,7 @@ export default function ProtectedRoutes() {
 
   React.useEffect(() => {
     const validateToken = async () => {
-      const response = await fetch("http://localhost:3000/api/auth/validate", {
+      const response = await fetch(`${BASE_API_URL}/api/auth/validate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

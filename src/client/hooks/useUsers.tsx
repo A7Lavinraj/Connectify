@@ -12,16 +12,14 @@ interface UsersStore {
 export const useUsers = create<UsersStore>((set) => {
   let users: User[] = [];
 
-  async function fetchConversations() {
+  (async () => {
     users = await getUsers(localStorage.getItem("mernchat@email") as string);
     set({
-      users: users.filter(
+      users: users?.filter(
         (user) => user.email !== localStorage.getItem("mernchat@email")
       )
     });
-  }
-
-  fetchConversations();
+  })();
 
   return {
     users: users,
@@ -33,7 +31,7 @@ export const useUsers = create<UsersStore>((set) => {
       event.preventDefault();
       const data = new FormData(event.target as HTMLFormElement);
       set({
-        searchedUsers: users.filter((user) => {
+        searchedUsers: users?.filter((user) => {
           return (
             user.email.includes(data.get("hint") as string) ||
             user.name.includes(data.get("hint") as string)

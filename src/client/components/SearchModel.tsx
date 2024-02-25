@@ -53,7 +53,7 @@ export default function SearchModel({ isOpen: status }: SearchModelProps) {
       </form>
       <section className="h-full max-h-[50vh] w-full max-w-[30rem] rounded overflow-y-auto flex flex-col gap-2">
         {searchedUsers
-          .filter((user) => {
+          ?.filter((user) => {
             for (let i = 0; i < conversations.length; i++) {
               for (let j = 0; j < conversations[i].users.length; j++) {
                 if (conversations[i].users[j].email === user.email)

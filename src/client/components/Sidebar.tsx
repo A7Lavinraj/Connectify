@@ -77,7 +77,7 @@ export default function Sidebar() {
                   }
 
                   setConversations([
-                    ...conversations.filter(
+                    ...conversations?.filter(
                       (con) => con.id !== _conversation.id
                     )
                   ]);

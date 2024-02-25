@@ -8,10 +8,13 @@ import { Message } from "../types";
 import { getMessages, sendMessage } from "../services";
 import Spinner from "../components/Spinner";
 
+const BASE_API_URL =
+  process.env.NODE_ENV === "development" ? "http://localhost:3000" : "/";
+
 export default function ConversationRoute() {
   const [loading, setLoading] = React.useState<boolean>(false);
   const socket = React.useMemo(
-    () => io("http://localhost:3000", { transports: ["websocket"] }),
+    () => io(`${BASE_API_URL}`, { transports: ["websocket"] }),
     []
   );
   const { conversationId } = useParams();
