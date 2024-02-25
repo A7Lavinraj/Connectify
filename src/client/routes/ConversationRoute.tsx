@@ -6,8 +6,10 @@ import { io } from "socket.io-client";
 import { useParams } from "react-router-dom";
 import { Message } from "../types";
 import { getMessages, sendMessage } from "../services";
+import Spinner from "../components/Spinner";
 
 export default function ConversationRoute() {
+  const [loading, setLoading] = React.useState<boolean>(false);
   const socket = React.useMemo(
     () => io("http://localhost:3000", { transports: ["websocket"] }),
     []
@@ -18,11 +20,14 @@ export default function ConversationRoute() {
   async function sendMessageHandler(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.target as HTMLFormElement);
+    setLoading(true);
     const response = await sendMessage(
       data.get("message") as string,
       conversationId as string,
       localStorage.getItem("mernchat@email") as string
     );
+
+    setLoading(false);
 
     if (response) {
       setMessages((currentMessages) => {
@@ -75,10 +80,11 @@ export default function ConversationRoute() {
             className="rounded h-14 outline-none border-none text-md px-2 w-full bg-custom200 text-custom400"
           />
           <button
+            disabled={loading}
             type="submit"
             className="bg-custom500 text-custom200 rounded px-5 py-2 max-w-32 h-14 hover:bg-custom400"
           >
-            <IoSend />
+            {loading ? <Spinner color="bg-custom500" /> : <IoSend />}
           </button>
         </form>
       </div>

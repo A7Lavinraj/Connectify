@@ -1,5 +1,6 @@
 import React from "react";
 import toast from "react-hot-toast";
+import Spinner from "../components/Spinner";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { CiSearch } from "react-icons/ci";
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -14,6 +15,7 @@ export default function Sidebar() {
   const location = useLocation();
   const searchModel = useSearchModel();
   const { conversations, setConversations } = useConversation();
+  const [loading, setLoading] = React.useState<boolean>(false);
 
   const logoutHandler = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -47,10 +49,14 @@ export default function Sidebar() {
               className={twMerge(
                 "text-custom300 flex items-center justify-between",
                 location.pathname === `/conversation/${conversation.id}` &&
-                "text-custom400"
+                  "text-custom400"
               )}
             >
-              <Link to={`/conversation/${conversation.id}`} className="flex-1">
+              <Link
+                aria-disabled={loading}
+                to={`/conversation/${conversation.id}`}
+                className="flex-1"
+              >
                 <div className="flex-1">
                   <h2>{user?.name}</h2>
                   <p>{user?.email}</p>
@@ -59,9 +65,11 @@ export default function Sidebar() {
               <form
                 onSubmit={async (event) => {
                   event.preventDefault();
+                  setLoading(true);
                   const _conversation = await removeConversation(
                     conversation.id
                   );
+                  setLoading(false);
                   if (_conversation) {
                     toast.success(`${user?.name} removed`);
                   } else {
@@ -75,8 +83,12 @@ export default function Sidebar() {
                   ]);
                 }}
               >
-                <button type="submit" className="text-custom600 text-xl">
-                  <FaRegTrashAlt />
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="text-custom600 text-xl"
+                >
+                  {loading ? <Spinner /> : <FaRegTrashAlt />}
                 </button>
               </form>
             </div>

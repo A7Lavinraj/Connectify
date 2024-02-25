@@ -6,12 +6,14 @@ import { IoMdAdd } from "react-icons/io";
 import { useSearchModel } from "../hooks/useSearchModel";
 import { useUsers } from "../hooks/useUsers";
 import { useConversation } from "../hooks/useConversation";
+import Spinner from "./Spinner";
 
 interface SearchModelProps {
   isOpen?: boolean;
 }
 
 export default function SearchModel({ isOpen: status }: SearchModelProps) {
+  const [loading, setLoading] = React.useState<boolean>(false);
   const { conversations, setConversations } = useConversation();
   const { searchedUsers, userQuery } = useUsers();
   const searchModel = useSearchModel();
@@ -74,15 +76,21 @@ export default function SearchModel({ isOpen: status }: SearchModelProps) {
                 <form
                   onSubmit={async (event) => {
                     event.preventDefault();
+                    setLoading(true);
                     const conversation = await addConversation(
                       localStorage.getItem("mernchat@email") as string,
                       user.email
                     );
+                    setLoading(false);
                     setConversations([...conversations, conversation]);
                   }}
                 >
-                  <button type="submit" className="text-custom300">
-                    <IoMdAdd />
+                  <button
+                    disabled={loading}
+                    type="submit"
+                    className="text-custom300 text-xl"
+                  >
+                    {loading ? <Spinner /> : <IoMdAdd />}
                   </button>
                 </form>
               </div>

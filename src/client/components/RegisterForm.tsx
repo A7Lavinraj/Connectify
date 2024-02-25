@@ -1,12 +1,15 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import Spinner from "./Spinner";
 
 export default function RegisterForm() {
+  const [loading, setLoading] = React.useState<boolean>(false);
   const navigate = useNavigate();
   const RegisterHandler = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const data = new FormData(event.target as HTMLFormElement);
+    setLoading(true);
 
     const response = await fetch("http://localhost:3000/api/auth/register", {
       method: "POST",
@@ -19,6 +22,8 @@ export default function RegisterForm() {
         password: data.get("password") as string
       })
     });
+
+    setLoading(false);
 
     if (response.ok) {
       const { token, email } = await response.json();
@@ -73,9 +78,9 @@ export default function RegisterForm() {
       </div>
       <button
         type="submit"
-        className="bg-custom500 text-custom200 p-2 rounded w-full"
+        className="bg-custom500 text-custom200 p-2 rounded w-full flex items-center justify-center"
       >
-        Register
+        {loading ? <Spinner color="bg-custom500" /> : <span>Register</span>}
       </button>
     </form>
   );
