@@ -68,3 +68,8 @@ export async function removeConversation(conversationId: string) {
 
   return await response.json();
 }
+
+export async function getUsers(email: string) {
+  const response = await fetch(`http://localhost:3000/api/users/${email}`);
+  return await response.json();
+}

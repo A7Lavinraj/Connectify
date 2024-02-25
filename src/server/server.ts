@@ -3,6 +3,7 @@ import cors from "cors";
 import http from "http";
 import getConversationController from "./controllers/getConversationController";
 import getMessages from "./controllers/getMessages";
+import getUsersController from "./controllers/getUsersController";
 import addConversationController from "./controllers/addConversationController";
 import authValidateController from "./controllers/authValidateController";
 import loginUserController from "./controllers/loginUserController";
@@ -54,7 +55,8 @@ if (process.env.NODE_ENV === "production") {
 
 app.get("/api/conversation/:email", getConversationController);
 app.get("/api/messages/:conversationId", getMessages);
-app.post("/api/conversation/", addConversationController);
+app.get("/api/users/:email", getUsersController);
+app.post("/api/conversation", addConversationController);
 app.post("/api/auth/validate", authValidateController);
 app.post("/api/auth/login", loginUserController);
 app.post("/api/auth/register", registerUserController);

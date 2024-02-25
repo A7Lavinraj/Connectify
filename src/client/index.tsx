@@ -2,10 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+
 import AuthPage from "./routes/AuthRoute";
 import ProtectedRoutes from "./utils/ProtectedRoutes";
 import ConversationRoute from "./routes/ConversationRoute";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 if (process.env.NODE_ENV === "development") {
   new EventSource("/esbuild").addEventListener("change", () =>

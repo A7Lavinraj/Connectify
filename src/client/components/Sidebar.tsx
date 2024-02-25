@@ -1,82 +1,18 @@
 import React from "react";
-import ConversationList from "./ConversationList";
-import useClickOutside from "../hooks/useClickOutside";
 import toast from "react-hot-toast";
-import { Link, useNavigate } from "react-router-dom";
-import { IoPersonAdd } from "react-icons/io5";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { CiSearch } from "react-icons/ci";
+import { CgRemoveR } from "react-icons/cg";
+import { getConversations, removeConversation } from "../services";
 import { Conversation } from "../types";
-import {
-  removeConversation,
-  addConversation,
-  getConversations
-} from "../services";
+import { twMerge } from "tailwind-merge";
+import { useSearchModel } from "../hooks/useSearchModel";
 
 export default function Sidebar() {
-  const navigate = useNavigate();
-  const { ref, state, setState } = useClickOutside();
   const [conversations, setConversations] = React.useState<Conversation[]>([]);
-
-  async function addConversationHandler(
-    event: React.FormEvent<HTMLFormElement>
-  ) {
-    event.preventDefault();
-    const data = new FormData(event.target as HTMLFormElement);
-    const userEmail = localStorage.getItem("mernchat@email") as string;
-    const conversationEmail = data.get("email") as string;
-
-    if (conversations) {
-      for (let i = 0; i < conversations.length; i++) {
-        if (conversations[i].users[0].email === conversationEmail) {
-          toast.error(`${conversationEmail} is already added!`);
-          setState(false);
-          return;
-        }
-      }
-      if (userEmail === conversationEmail) {
-        toast.error("You can't add yourself in conversations!");
-        setState(false);
-        return;
-      }
-
-      const conversation = await addConversation(userEmail, conversationEmail);
-
-      if (conversations) {
-        toast.success(`${conversationEmail} added successfully!`);
-        setState(false);
-      }
-      setConversations((currentConversations) => {
-        if (currentConversations) {
-          return [conversation, ...currentConversations];
-        } else {
-          return [];
-        }
-      });
-    }
-  }
-
-  async function removeConversationHandler(conversationId: string) {
-    const response = await removeConversation(conversationId);
-
-    if (response && conversations) {
-      toast.success("Conversation removed sucessfully!");
-      setConversations([
-        ...conversations.filter(
-          (conversation) => conversation.id != response.id
-        )
-      ]);
-    } else {
-      toast.error("Error occured while remove conversation!");
-    }
-  }
-
-  async function fetchConversationsOnMount() {
-    const email = localStorage.getItem("mernchat@email");
-
-    if (email) {
-      const conversations = await getConversations(email);
-      setConversations([...conversations]);
-    }
-  }
+  const navigate = useNavigate();
+  const location = useLocation();
+  const searchModel = useSearchModel();
 
   const logoutHandler = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -86,51 +22,82 @@ export default function Sidebar() {
   };
 
   React.useEffect(() => {
-    fetchConversationsOnMount();
+    async function fetchConversationOnMount() {
+      const _conversations = await getConversations(
+        localStorage.getItem("mernchat@email") as string
+      );
+      setConversations([..._conversations]);
+    }
+
+    fetchConversationOnMount();
   }, []);
 
   return (
-    <aside className="hidden md:flex flex-col min-w-[300px] max-w-[300px] h-screen bg-custom200">
-      <Link to="/">
-        <h2 className="text-custom400 font-bold text-2xl mt-5 ml-5">
-          Connectify
-        </h2>
-      </Link>
-      <div>
-        <div ref={ref} className="flex items-center ml-5 mt-5 gap-5 h-8 w-fit">
-          {state ? (
-            <form onSubmit={addConversationHandler} className="h-full">
-              <input
-                type="text"
-                name="email"
-                autoFocus={state}
-                className="bg-custom300 text-custom500 border-none h-full w-[180px] p-1 rounded outline-transparent"
-              />
-            </form>
-          ) : (
-            <button className="text-2xl text-custom300 hover:text-custom500 transition-colors duration-200 ease-in-out">
-              <IoPersonAdd />
-            </button>
-          )}
-        </div>
+    <aside className="hidden lg:flex flex-col w-[300px] h-screen bg-custom200 justify-between">
+      <div className=" pl-5 py-5">
+        <Link to="/">
+          <h2 className="text-custom400 font-bold text-2xl">Connectify</h2>
+        </Link>
+        <button
+          onClick={searchModel.open}
+          className="flex gap-2 text-custom300 items-center mt-10"
+        >
+          <CiSearch />
+          <p>Search</p>
+        </button>
       </div>
-      <section className="mt-5 flex flex-col overflow-y-auto flex-1">
-        {conversations?.length ? (
-          <ConversationList
-            conversations={conversations}
-            removeHandler={removeConversationHandler}
-          />
-        ) : (
-          <p className="text-custom300 ml-5 mt-5 text-lg font-bold">
-            No Contacts yet
-          </p>
-        )}
+      <section className="mt-10 flex-1 px-5 my-5 overflow-y-auto flex flex-col gap-5">
+        {conversations.map((conversation) => {
+          const user = conversation.users.find(
+            (user) => user.email !== localStorage.getItem("mernchat@email")
+          );
+          return (
+            <div
+              key={conversation.id}
+              className={twMerge(
+                "text-custom300 flex items-center justify-between",
+                location.pathname === `/conversation/${conversation.id}` &&
+                  "text-custom400"
+              )}
+            >
+              <Link to={`/conversation/${conversation.id}`} className="flex-1">
+                <div className="flex-1">
+                  <h2>{user?.name}</h2>
+                  <p>{user?.email}</p>
+                </div>
+              </Link>
+              <form
+                onSubmit={async (event) => {
+                  event.preventDefault();
+                  const _conversation = await removeConversation(
+                    conversation.id
+                  );
+                  if (_conversation) {
+                    toast.success(`${user?.name} removed`);
+                  } else {
+                    toast.error("Error occurred");
+                  }
+
+                  setConversations([
+                    ...conversations.filter(
+                      (con) => con.id !== _conversation.id
+                    )
+                  ]);
+                }}
+              >
+                <button type="submit" className="text-red-500 text-xl">
+                  <CgRemoveR />
+                </button>
+              </form>
+            </div>
+          );
+        })}
       </section>
       <section>
         <form onSubmit={logoutHandler}>
           <button
             type="submit"
-            className="bg-custom500 text-custom200 w-full h-10 font-semibold"
+            className="flex items-center justify-center gap-2 text-custom600 bg-red-900 w-full h-10"
           >
             Logout
           </button>

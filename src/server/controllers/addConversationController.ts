@@ -6,6 +6,7 @@ export default async function addConversationController(
   response: Response
 ) {
   const { userEmail, conversationEmail } = request.body;
+
   try {
     const user = await db.user.findUnique({
       where: {
@@ -17,12 +18,7 @@ export default async function addConversationController(
       console.error("ERROR user not found!");
       return response.status(404);
     }
-  } catch (error) {
-    console.error("ERROR addConversationController", error);
-    return response.status(500);
-  }
 
-  try {
     const users = await db.user.findMany({
       where: {
         OR: [{ email: userEmail }, { email: conversationEmail }]

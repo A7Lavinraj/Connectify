@@ -1,53 +1,27 @@
 import React from "react";
-import { twMerge } from "tailwind-merge";
-import { Link } from "react-router-dom";
-import { IoMdRemove } from "react-icons/io";
+import { RxCross2 } from "react-icons/rx";
 
-interface ContactProps {
-  username: string;
-  email: string;
+interface ConversationProps {
+  name: string;
   conversationId: string;
-  removeHandler: (coversationId: string) => void;
-  href: string;
-  active?: boolean;
+  removeConversationHandler: (conversationId: string) => void;
 }
 
-export default function Contact({
-  username,
-  email,
+export default function conversationItem({
+  name,
   conversationId,
-  removeHandler,
-  href,
-  active
-}: ContactProps) {
-  function submitHandler(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    removeHandler(conversationId);
+  removeConversationHandler
+}: ConversationProps) {
+  function submitHandler() {
+    removeConversationHandler(conversationId);
   }
 
   return (
-    <div className="flex items-center justify-between p-4 group">
-      <Link to={href}>
-        <div className="flex flex-col">
-          <h2
-            className={twMerge(
-              "font-semibold",
-              active ? "text-custom500" : "text-custom300"
-            )}
-          >
-            {username}
-          </h2>
-          <p className={twMerge(active ? "text-custom400" : "text-custom300")}>
-            {email}
-          </p>
-        </div>
-      </Link>
+    <div>
+      <p>{name}</p>
       <form onSubmit={submitHandler}>
-        <button
-          type="submit"
-          className="group-hover:visible invisible bg-red-400 text-custom600 rounded p-1"
-        >
-          <IoMdRemove />
+        <button type="submit">
+          <RxCross2 />
         </button>
       </form>
     </div>
