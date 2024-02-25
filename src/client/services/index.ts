@@ -1,6 +1,8 @@
+const BASE_API_URL = "";
+
 export async function getMessages(conversationId: string) {
   const response = await fetch(
-    `http://localhost:3000/api/messages/${conversationId}`,
+    `${BASE_API_URL}/api/messages/${conversationId}`,
     {
       method: "GET"
     }
@@ -14,7 +16,7 @@ export async function sendMessage(
   conversationId: string,
   email: string
 ) {
-  const response = await fetch("http://localhost:3000/api/messages", {
+  const response = await fetch("${BASE_API_URL}/api/messages", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -30,12 +32,9 @@ export async function sendMessage(
 }
 
 export async function getConversations(email: string) {
-  const response = await fetch(
-    `http://localhost:3000/api/conversation/${email}`,
-    {
-      method: "GET"
-    }
-  );
+  const response = await fetch(`${BASE_API_URL}/api/conversation/${email}`, {
+    method: "GET"
+  });
 
   return await response.json();
 }
@@ -44,7 +43,7 @@ export async function addConversation(
   userEmail: string,
   conversationEmail: string
 ) {
-  const response = await fetch("http://localhost:3000/api/conversation/", {
+  const response = await fetch("${BASE_API_URL}/api/conversation/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -60,7 +59,7 @@ export async function addConversation(
 
 export async function removeConversation(conversationId: string) {
   const response = await fetch(
-    `http://localhost:3000/api/conversation/${conversationId}`,
+    `${BASE_API_URL}/api/conversation/${conversationId}`,
     {
       method: "DELETE"
     }
@@ -70,6 +69,6 @@ export async function removeConversation(conversationId: string) {
 }
 
 export async function getUsers(email: string) {
-  const response = await fetch(`http://localhost:3000/api/users/${email}`);
+  const response = await fetch(`${BASE_API_URL}/api/users/${email}`);
   return await response.json();
 }
